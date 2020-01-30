@@ -186,7 +186,9 @@ web.service.consul.	0	IN	TXT	"consul-network-segment="
 ;; MSG SIZE  rcvd: 99
 ```
 ・Windows
+
 別途、bindに内包されている`dig`コマンドをインストールしてください。
+
 https://www.isc.org/download/
 ```shell
 PS > dig "@127.0.0.1" -p 8600 web.service.consul
@@ -237,6 +239,7 @@ $ consul agent -server -bind=127.0.0.1 \
 -config-dir=/path/to/consul-workshop/consul.d
 ```
 ・Windows
+
 consul起動コマンドは一行ずつコピーペーストしてください。
 ```
 PS > mkdir -p consul-workshop/consul.d
