@@ -8,12 +8,15 @@ ConsulにDevモードという、複雑な設定や準備の必要なく、簡�
 
 パスを通します。以下はmacOSの例ですが、OSにあった手順で consulコマンドにパスを通します。
 
+・macOS
 ```shell
 $ mv /path/to/consul /usr/local/bin
 $ chmod +x /usr/local/bin/consul
 ```
+
 新しい端末を立ち上げ、Consulのバージョンを確認します。
 
+・macOS , Windows
 ```console
 $ consul --version
 Consul v1.5.1
@@ -25,6 +28,7 @@ Consul v1.5.1
 
 次にConsulサーバを立ち上げ、ConsulのService Discoveryの機能を試してみます。
 
+・macOS , Windows
 ```shell
 consul agent -dev
 ```
@@ -104,6 +108,7 @@ Client addressは、Consulの機能にアクセスしたいクライアントと
 
 それでは以下のコマンドを実行してみましょう。
 
+・macOS , Windows
 ```console
 $ consul members
 Node                 Address         Status  Type    Build      Protocol  DC   Segment
@@ -121,8 +126,14 @@ Consulの持つ機能の一つにService Registration（サービス登録）や
 
 まず、webというサービスがあり、IPアドレスが10.0.0.10のノードポート8080番で動いてるとします。ちなみに、ここでは実際にこのサービスが動いているかは気にしません。このサービスを登録するには以下のコマンドを打ちます。
 
+・macOS
 ```console
 $ consul services register -name=web -address=10.0.0.10 -port=8080
+Registered service: web
+```
+・Windows
+```shell
+PS > consul services register -name=web -address="10.0.0.10" -port=8080
 Registered service: web
 ```
 
@@ -146,7 +157,7 @@ web
 
 ここでは`dig`コマンドによるDNS queryを使ってみましょう。ConsulのDNSはポート8600番なので、そこに対してQueryを発行します。また、サービス名は`<service名>.service.consul`という形式でLookupできます。
 
-
+・macOS
 ```console
 $ dig @127.0.0.1 -p 8600 web.service.consul
 
@@ -174,6 +185,36 @@ web.service.consul.	0	IN	TXT	"consul-network-segment="
 ;; WHEN: Tue Aug 20 20:01:30 JST 2019
 ;; MSG SIZE  rcvd: 99
 ```
+・Windows
+別途、bindに内包されている`dig`コマンドをインストールしてください。
+https://www.isc.org/download/
+```shell
+PS > dig "@127.0.0.1" -p 8600 web.service.consul
+
+; <<>> DiG 9.14.10 <<>> @127.0.0.1 -p 8600 web.service.consul
+; (1 server found)
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 19649
+;; flags: qr aa rd; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 2
+;; WARNING: recursion requested but not available
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 4096
+;; QUESTION SECTION:
+;web.service.consul.            IN      A
+
+;; ANSWER SECTION:
+web.service.consul.     0       IN      A       10.0.0.10
+
+;; ADDITIONAL SECTION:
+web.service.consul.     0       IN      TXT     "consul-network-segment="
+
+;; Query time: 0 msec
+;; SERVER: 127.0.0.1#8600(127.0.0.1)
+;; WHEN: Thu Jan 30 16:53:39 東京 (標準時) 2020
+;; MSG SIZE  rcvd: 99
+```
 
 登録した通り`10.0.0.10`が返ってきました。
 ここでは、存在していないサービスを登録してService discoveryを試しましたが、現実世界においては、確実に存在しているサービスを登録する必要があります。また、そのサービスが正常に稼働しているかをチェックするHealth checkも行う必要があります。ConsulによるHealth checkや他のサービス登録方法などは別のワークショップで行います。
@@ -184,6 +225,7 @@ web.service.consul.	0	IN	TXT	"consul-network-segment="
 
 ここでは引数に設定してみます。`-data-dir`の値はご自身の環境に合わせて好きな場所をして下さい。devモードで起動しているターミナルを止めて次を実行します。
 
+・macOS
 ```shell
 $ mkdir -p consul-workshop/consul.d
 $ cd consul-workshop
@@ -192,6 +234,18 @@ $ consul agent -server -bind=127.0.0.1 \
 -data-dir=/path/to/consul-workshop/localdata \
 -bootstrap-expect=1 -ui \
 -dns-port=8600 \
+-config-dir=/path/to/consul-workshop/consul.d
+```
+・Windows
+consul起動コマンドは一行ずつコピーペーストしてください。
+```
+PS > mkdir -p consul-workshop/consul.d
+PS > cd consul-workshop
+PS > consul agent -server -bind="127.0.0.1" `
+-client="127.0.0.1" `
+-data-dir=/path/to/consul-workshop/localdata `
+-bootstrap-expect=1 -ui `
+-dns-port=8600 `
 -config-dir=/path/to/consul-workshop/consul.d
 ```
 
