@@ -139,6 +139,7 @@ Registered service: web
 
 これでサービスが登録されました。以下のコマンドで登録されているサービスの一覧が出力できます。
 
+・macOS , Windows
 ```console
 $ consul catalog services
 consul
@@ -187,7 +188,11 @@ web.service.consul.	0	IN	TXT	"consul-network-segment="
 ```
 ・Windows
 
-別途、bindに内包されている`dig`コマンドをインストールしてください。
+※このコマンドはコマンドプロンプトで実行してください。
+```shell
+> nslookup -port=8600 web.service.consul 127.0.0.1
+```
+もしくはbindに内包されている`dig`コマンドをインストールしてください。
 
 https://www.isc.org/download/
 ```shell
